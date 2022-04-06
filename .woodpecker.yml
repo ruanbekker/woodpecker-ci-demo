@@ -2,5 +2,5 @@ pipeline:
   build:
     image: busybox
     commands:
-      - echo hello
+      - echo helloworld
 
