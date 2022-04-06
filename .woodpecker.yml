@@ -1,6 +1,6 @@
 pipeline:
-  helloworld:
+  build:
     image: alpine
     commands:
-      - echo hello-world
+      - echo hello
 
