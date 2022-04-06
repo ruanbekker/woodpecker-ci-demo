@@ -1,5 +1,5 @@
 pipeline:
-  hello-world:
+  helloworld:
     image: alpine
     commands:
       - echo hello-world
