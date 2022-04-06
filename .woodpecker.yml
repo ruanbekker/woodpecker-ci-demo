@@ -1,4 +1,3 @@
----
 pipeline:
   hello-world:
     image: alpine
