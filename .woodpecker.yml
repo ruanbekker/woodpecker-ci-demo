@@ -1,6 +1,6 @@
 pipeline:
   build:
-    image: alpine
+    image: busybox
     commands:
       - echo hello
 
