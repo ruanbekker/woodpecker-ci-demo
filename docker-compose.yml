@@ -1,0 +1,86 @@
+version: "3.8"
+
+x-logging:
+  &default-logging
+  driver: "json-file"
+  options:
+    max-size: "1m"
+    max-file: "1"
+    tag: "{{.Name}}"
+
+services:
+  woodpecker-gitea:
+    container_name: woodpecker-gitea
+    image: gitea/gitea:${GITEA_VERSION:-1.14.5}
+    restart: unless-stopped
+    environment:
+      - APP_NAME="Gitea"
+      - USER_UID=1000
+      - USER_GID=1000
+      - USER=git
+      - RUN_MODE=prod
+      - DOMAIN=git.${IP_ADDRESS}.nip.io
+      - SSH_DOMAIN=git.${IP_ADDRESS}.nip.io
+      - HTTP_PORT=3000
+      - ROOT_URL=http://git.${IP_ADDRESS}.nip.io:3000
+      - SSH_PORT=2022
+      - SSH_LISTEN_PORT=22
+      - DB_TYPE=sqlite3
+      - GIT_SSL_NO_VERIFY=true
+    ports:
+      - "2022:22"
+      - "3000:3000"
+    networks:
+      - woodpecker-net
+    volumes:
+      - ./data/gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    logging: *default-logging
+  
+  woodpecker-server:
+    image: woodpeckerci/woodpecker-server:v0.15
+    container_name: woodpecker-server
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+    volumes:
+      - ./data/server:/var/lib/woodpecker
+    environment:
+      - WOODPECKER_OPEN=true
+      - WOODPECKER_HOST=http://ci.${IP_ADDRESS}.nip.io:8000
+      - WOODPECKER_AGENT_SECRET=${WOODPECKER_AGENT_SECRET}
+      - WOODPECKER_GITEA=true
+      - WOODPECKER_GITEA_URL=http://git.${IP_ADDRESS}.nip.io:3000
+      - WOODPECKER_GITEA_CLIENT=${WOODPECKER_GITEA_CLIENT}
+      - WOODPECKER_GITEA_SECRET=${WOODPECKER_GITEA_SECRET}
+      - WOODPECKER_GITEA_SKIP_VERIFY=true
+    restart: unless-stopped
+    cpus: 0.5
+    mem_limit: 512m
+    networks:
+      - woodpecker-net
+    logging: *default-logging
+
+  woodpecker-agent:
+    image: woodpeckerci/woodpecker-agent:v0.15
+    container_name: woodpecker-agent
+    command: agent
+    restart: unless-stopped
+    depends_on:
+      - woodpecker-server
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WOODPECKER_SERVER=woodpecker-server:9000
+      - WOODPECKER_AGENT_SECRET=${WOODPECKER_AGENT_SECRET}
+    restart: unless-stopped
+    cpus: 0.5
+    mem_limit: 512m
+    networks:
+      - woodpecker-net
+    logging: *default-logging
+
+networks:
+  woodpecker-net:
+    name: woodpecker-net

@@ -1,6 +1,22 @@
 pipeline:
-  build:
+  run-one:
     image: busybox
+    group: first
     commands:
-      - echo helloworld
+      - echo "first run"
+      
+  run-two:
+    image: busybox
+    group: first
+    commands:
+      - echo "second run"
 
+  run-three:
+    image: ubuntu
+    commands:
+      - echo hi
+
+when:
+  branch:
+    include: [ master, release/* ]
+    exclude: [ test/1.0.0, test/1.1.* ]
