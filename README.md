@@ -87,7 +87,7 @@ $ openssl rand -base64 32
 V5og1c7yAa5aZw7n7pjP86+jCkdRl3VakEy+EjC7vO8=
 ```
 
-Then we will populate the gitea client and secret that we retrieved from gitea, and the agent secret that we received from the openssl command in the `./env` file:
+Then we will populate the gitea client and secret that we retrieved from gitea, and the agent secret that we received from the openssl command in the `.env` file:
 
 ```
 WOODPECKER_AGENT_SECRET=V5og1c7yAa5aZw7n7pjP86+jCkdRl3VakEy+EjC7vO8=
