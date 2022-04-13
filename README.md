@@ -1,6 +1,11 @@
 # woodpecker-ci-demo
-[![status-badge](http://192.168.0.8/api/badges/ruanbekker/woodpecker-ci-demo/status.svg)](http://192.168.0.8/ruanbekker/woodpecker-ci-demo)
 woodpecker-ci-demo
+
+## What is Woodpecker
+
+Taken from their [documentation](https://woodpecker-ci.org/docs/intro): "Woodpecker is a simple CI engine with great extensibility. It runs your pipelines inside containers, so if you are already using them in your daily workflow, you'll love Woodpecker for sure."
+
+You can read more about them [here](https://woodpecker-ci.org/docs/intro)
 
 ## About
 
