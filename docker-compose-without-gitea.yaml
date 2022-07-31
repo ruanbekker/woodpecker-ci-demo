@@ -1,0 +1,48 @@
+version: "3"
+
+networks:
+    gitea:
+        external: false
+
+services:
+  server: 
+  woodpecker-server:
+    image: woodpeckerci/woodpecker-server:v0.15
+    container_name: woodpecker-server
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:8941:8000
+    volumes:
+      - ./data/server:/var/lib/woodpecker
+    environment:
+      - WOODPECKER_OPEN=true
+      - WOODPECKER_HOST=https://woodpecker.esmailelbob.xyz
+      - WOODPECKER_GITEA=true
+      - WOODPECKER_GITEA_URL= #Gitea root domain
+      - WOODPECKER_AGENT_SECRET= #Secret from blog https://containers.fan/posts/setup-gitea-with-woodpecker-ci/
+      - WOODPECKER_GITEA_CLIENT= #Client app 
+      - WOODPECKER_GITEA_SECRET= #client app secert
+      - WOODPECKER_GITEA_SKIP_VERIFY=true
+    restart: unless-stopped
+    cpus: 0.5
+    mem_limit: 512m
+    networks:
+      - gitea
+
+  woodpecker-agent:
+    image: woodpeckerci/woodpecker-agent:v0.15
+    container_name: woodpecker-agent
+    command: agent
+    restart: unless-stopped
+    depends_on:
+      - woodpecker-server
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WOODPECKER_SERVER=woodpecker-server:9000
+      - WOODPECKER_AGENT_SECRET= #Secret from blog (same code)
+    restart: unless-stopped
+    cpus: 0.5
+    mem_limit: 512m
+    networks:
+      - gitea
