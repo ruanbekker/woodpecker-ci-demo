@@ -81,7 +81,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - WOODPECKER_SERVER=woodpecker-server:9000
-      - WOODPECKER_AGENT_SECRET=us3A89YTXmX/MlnN2U7NSe7YXLC8dWrib06i9XuWmPI=
+      - WOODPECKER_AGENT_SECRET= #Secret from blog (same code)
     restart: unless-stopped
     cpus: 0.5
     mem_limit: 512m
