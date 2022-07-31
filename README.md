@@ -43,6 +43,50 @@ export IP_ADDRESS=192.168.0.182 # replace with your ip address
 
 ## Gitea
 
+If you already installed gitea just paste this into your docker-compose (pay attention to networks name):
+```yaml
+woodpecker-server:
+    image: woodpeckerci/woodpecker-server:v0.15
+    container_name: woodpecker-server
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:8941:8000
+    volumes:
+      - ./data/server:/var/lib/woodpecker
+    environment:
+      - WOODPECKER_OPEN=true
+      - WOODPECKER_HOST=https://CHANGEME
+      - WOODPECKER_GITEA=true
+      - WOODPECKER_GITEA_URL=https://CHANGEME
+      - WOODPECKER_AGENT_SECRET=CHANGEME
+      - WOODPECKER_GITEA_CLIENT=CHANGEME
+      - WOODPECKER_GITEA_SECRET=CHANGEME
+      - WOODPECKER_GITEA_SKIP_VERIFY=true
+    restart: unless-stopped
+    cpus: 0.5
+    mem_limit: 512m
+    networks:
+      - gitea
+
+  woodpecker-agent:
+    image: woodpeckerci/woodpecker-agent:v0.15
+    container_name: woodpecker-agent
+    command: agent
+    restart: unless-stopped
+    depends_on:
+      - woodpecker-server
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WOODPECKER_SERVER=woodpecker-server:9000
+      - WOODPECKER_AGENT_SECRET=CHANGEME
+    restart: unless-stopped
+    cpus: 0.5
+    mem_limit: 512m
+    networks:
+      - gitea
+
+```
 Run the gitea container:
 
 ```bash
